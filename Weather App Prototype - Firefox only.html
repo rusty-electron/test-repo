@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Weather App</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<link href="https://fonts.googleapis.com/css?family=Tajawal|Titillium+Web" rel="stylesheet">
+</head>
+<style>
+	body{
+		background-color: #16a085;
+		background-repeat: no-repeat;
+		background-size: cover;
+		min-height: 100vh;
+		overflow: hidden;
+	}
+
+	h1{
+		color: white;
+		font-size: 60px;
+		font-family: 'Tajawal', sans-serif;
+	}
+
+	h4{
+		color: white;
+		font-family: 'Titillium Web', sans-serif;
+	}
+
+	.btn{
+		font-family: 'Titillium Web', sans-serif;
+	}
+
+	.btn{
+		font-size: 18px;
+	}
+</style>
+<body>
+	<div class="text-center">
+		<h1>Local Weather App</h1>
+		<h4>OpenWeather API</h4>
+		<ul class="list-unstyled">
+			<li class="btn btn-default" id="city"></li>
+			<li class="btn btn-default" id="weather"></li>
+			<li class="btn btn-default" id="temp"></li>
+			<li class="btn btn-default" id="wind"></li>
+		</ul>
+	</div>
+	
+	<script
+			  src="https://code.jquery.com/jquery-2.2.4.min.js"
+			  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+			  crossorigin="anonymous"></script>
+	</script>
+	<script>
+		$(document).ready(function(){
+
+			var long;
+			var lat;
+
+			$.getJSON('http://ip-api.com/json',function(loc){
+				lat = loc.lat;
+				long = loc.lon;
+
+				var api = 'http://api.openweathermap.org/data/2.5/weather?lat='+lat+'&lon='+long+'&appid=5c5f188894b8333af202bb8e07545891';
+
+				$.getJSON(api, function(data){
+						var swapTemp = false;
+
+						var location = data.name;
+						var country = data.sys.country;
+
+						var weather = data.weather[0].main;
+						var wind = data.wind.speed;
+						var ktemp = data.main.temp;
+
+						var ctemp = +(ktemp - 273.15).toFixed(2);
+						var ftemp = +(9*ctemp/5 + 32).toFixed(2);
+						
+						$('#city').html("<i class='fa fa-map-marker'></i> "+location+", "+country);
+						$('#weather').html(weather);
+						$('#temp').html("<i class='fa fa-thermometer-half'></i> "+ctemp+" &#8451;");
+
+						$('#temp').click(function(){
+							if(swapTemp === false){
+								$(this).html("<i class='fa fa-thermometer-half'></i> "+ftemp+" &#8457;");
+								swapTemp = true;
+							}else{
+								$('#temp').html("<i class='fa fa-thermometer-half'></i> "+ctemp+" &#8451;");
+								swapTemp = false;
+							}
+						})
+
+						$('#wind').html(+(wind*3.6).toFixed(2) + ' kph');
+
+						var url;
+						switch(weather){
+							case 'Thunderstorm':url = '3Zi07aNODs8';//cool = 7caumHzcqL4
+												break;
+							case 'Rain':url = 'mODxn7mOzms';
+										break;
+							case 'Clouds':url = '8NSpHrD1FLw';
+										break;
+							case 'Clear':url = 'ewzHvxHl-Ak';
+										break;
+							case 'Mist':url = 'NQSWvyVRIJk';
+										break;
+							default: url='yCH2PXtwdwc';
+						}
+
+
+						$('body').css('background-image','url(https://source.unsplash.com/'+url+'/1366x668)');
+					});
+			})
+			
+		})
+	</script>
+	<script src="https://use.fontawesome.com/1d9fa78431.js"></script>
+</body>
+</html>
